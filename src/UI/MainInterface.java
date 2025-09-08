@@ -371,23 +371,16 @@ public class MainInterface extends JFrame {
     }
 
     private void showMessageContent() {
-        String content = "这里是消息通知模块\n\n";
-        content += "当前权限: " + currentUserRole.getRoleName() + "\n\n";
-        content += "可用功能:\n";
+        titleLabel.setText("消息通知");
 
-        switch (currentUserRole) {
-            case ADMIN:
-                content += "• 系统公告发布\n• 全校通知管理\n• 消息模板设置\n• 消息统计分析";
-                break;
-            case TEACHER:
-                content += "• 班级通知发布\n• 学生消息发送\n• 课程通知管理\n• 消息历史查看";
-                break;
-            case STUDENT:
-                content += "• 系统通知查看\n• 个人消息\n• 课程通知\n• 消息设置";
-                break;
-        }
+        // 清空内容面板
+        contentPanel.removeAll();
 
-        displayContent("消息通知", content);
+        // 创建消息面板
+        MessagePanel messagePanel = new MessagePanel(currentUserRole, currentUsername, currentNickname);
+        contentPanel.add(messagePanel, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 
     private void showSystemContent() {
