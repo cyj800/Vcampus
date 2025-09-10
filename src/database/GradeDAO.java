@@ -663,4 +663,35 @@ public class GradeDAO {
         grade.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         return grade;
     }
+    // 添加到GradeDAO.java中
+    public String getNextCourseId() {
+        String sql = "SELECT MAX(course_id) FROM courses";
+
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                String maxId = rs.getString(1);
+                if (maxId != null) {
+                    // 解析现有编号并生成下一个
+                    try {
+                        String prefix = maxId.replaceAll("[0-9]+$", "");
+                        String numberPart = maxId.replaceAll("^[^0-9]+", "");
+                        if (!numberPart.isEmpty()) {
+                            int nextNumber = Integer.parseInt(numberPart) + 1;
+                            return prefix + String.format("%03d", nextNumber);
+                        }
+                    } catch (Exception e) {
+                        // 如果解析失败，使用时间戳
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        // 默认返回
+        return "CS" + System.currentTimeMillis() % 10000;
+    }
 }

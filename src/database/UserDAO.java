@@ -4,7 +4,8 @@ import model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
-
+import java.util.ArrayList;
+import java.util.List;
 public class UserDAO {
 
     // 用户注册
@@ -120,5 +121,33 @@ public class UserDAO {
         }
 
         return null;
+    }
+    public List<User> getAllTeachers() {
+        List<User> teachers = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE role_code = 1 ORDER BY nickname";
+
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+                user.setNickname(rs.getString("nickname"));
+                user.setRoleCode(rs.getInt("role_code"));
+                user.setClassName(rs.getString("class_name"));
+                user.setDepartment(rs.getString("department"));
+                user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                user.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+                teachers.add(user);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return teachers;
     }
 }

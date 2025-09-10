@@ -17,6 +17,7 @@ public class MainInterface extends JFrame {
     private JLabel titleLabel;     // 标题标签
     private JLabel userInfoLabel;  // 用户信息标签
 
+
     // 功能按钮
     private JButton libraryButton;
     private JButton courseButton;
@@ -317,23 +318,35 @@ public class MainInterface extends JFrame {
     }
 
     private void showCourseContent() {
-        String content = "这里是课程管理模块\n\n";
-        content += "当前权限: " + currentUserRole.getRoleName() + "\n\n";
-        content += "可用功能:\n";
+        // 清空内容面板
+        contentPanel.removeAll();
+        titleLabel.setText("课程管理");
+
+        JPanel coursePanel = null;
 
         switch (currentUserRole) {
             case ADMIN:
-                content += "• 课程设置\n• 教师分配\n• 课程时间安排\n• 教室资源管理\n• 课程统计分析";
+                // 管理员看到课程管理界面
+                coursePanel = new AdminCourseManagementPanel();
                 break;
             case TEACHER:
-                content += "• 课程信息管理\n• 学生名单查看\n• 课程资料上传\n• 课程通知发布";
+                // 教师看到自己的课程管理界面
+                coursePanel = new TeacherCoursePanel(currentUsername,currentNickname);
                 break;
             case STUDENT:
-                content += "• 课程查询\n• 选课管理\n• 课表查看\n• 课程评价";
+                // 学生看到选课界面
+                coursePanel = new StudentCoursePanel(currentUsername, currentNickname);
                 break;
+            default:
+                JOptionPane.showMessageDialog(this, "用户角色错误", "错误", JOptionPane.ERROR_MESSAGE);
+                return;
         }
 
-        displayContent("课程管理", content);
+        if (coursePanel != null) {
+            contentPanel.add(coursePanel, BorderLayout.CENTER);
+            contentPanel.revalidate();
+            contentPanel.repaint();
+        }
     }
 
     private void showHomeworkContent() {
